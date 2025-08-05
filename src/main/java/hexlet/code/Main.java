@@ -1,8 +1,5 @@
 package hexlet.code;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Main {
     // Нужно указывать базовое исключение,
@@ -19,9 +16,22 @@ public class Main {
                 statement.execute(sql);
             }
 
-            var sql2 = "INSERT INTO users (username, phone) VALUES ('tommy', '123456789')";
-            try (Statement statement2 = conn.createStatement()) {
-                statement2.executeUpdate(sql2);
+            var sql2 = "INSERT INTO users (username, phone) VALUES (?, ?)";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.setString(1, "Tommy");
+                preparedStatement.setString(2, "123456789");
+                preparedStatement.executeUpdate();
+
+                preparedStatement.setString(1, "Bobby");
+                preparedStatement.setString(2, "1111111");
+                preparedStatement.executeUpdate();
+
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    System.out.println("generatedKeys = " + generatedKeys.getLong(1));
+                } else {
+                    throw new SQLException("DB have not returned an id after saving the entity");
+                }
             }
 
 
