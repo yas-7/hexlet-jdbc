@@ -1,5 +1,10 @@
 package hexlet.code;
+import hexlet.code.dao.UserDAO;
+import hexlet.code.model.User;
+
 import java.sql.*;
+import java.util.Objects;
+import java.util.Optional;
 
 public class Main {
     // Нужно указывать базовое исключение,
@@ -34,6 +39,16 @@ public class Main {
                 }
             }
 
+            User user = new User("Anna", "123123123");
+            UserDAO userdao = new UserDAO(conn);
+            userdao.save(user);
+            System.out.println("user " + user);
+
+            // Возвращается Optional<User>
+            Optional<User> user2 = userdao.find(user.getId());
+            user2.ifPresent(value -> System.out.println(Objects.equals(value.getId(), user.getId())));
+
+            userdao.delete(1L);
 
             var sql3 = "SELECT * FROM users";
             try (Statement statement3 = conn.createStatement()) {
